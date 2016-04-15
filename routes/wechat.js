@@ -14,37 +14,36 @@ router.use('/', wechat(config, function (req, res, next) {
     // 微信输入信息都在req.weixin上
     var message = req.weixin;
     console.log(message);
-    if (message.FromUserName === 'ywang328') {
-        // 回复屌丝(普通回复)
-        res.reply('hehe');
-    } else if (message.FromUserName === 'text') {
-        //你也可以这样回复text类型的信息
-        res.reply({
-            content: 'text object',
-            type: 'text'
-        });
-    } else if (message.FromUserName === 'hehe') {
+    if (message.Content.toLowerCase().trim() === 'music') {
         // 回复一段音乐
         res.reply({
             type: "music",
             content: {
-                title: "来段音乐吧",
-                description: "一无所有",
-                musicUrl: "http://mp3.com/xx.mp3",
-                hqMusicUrl: "http://mp3.com/xx.mp3",
-                thumbMediaId: "thisThumbMediaId"
+                title: "每日精选",
+                description: "Lay Back Down by Eric Lindell",
+                musicUrl: "http://dl.last.fm/static/1460553531/113994170/a01c6ec09af45733a35d9667a6aafe090ca5846dbb40229bddbbb1f4e51b1292/Eric+Lindell+-+Lay+Back+Down.mp3",
+                hqMusicUrl: "http://dl.last.fm/static/1460553531/113994170/a01c6ec09af45733a35d9667a6aafe090ca5846dbb40229bddbbb1f4e51b1292/Eric+Lindell+-+Lay+Back+Down.mp3",
             }
         });
     } else {
         // 回复高富帅(图文回复)
-        res.reply([
-            {
-                title: '你来我家接我吧',
-                description: '这是女神与高富帅之间的对话',
-                picurl: 'http://nodeapi.cloudfoundry.com/qrcode.jpg',
-                url: 'http://nodeapi.cloudfoundry.com/'
-            }
-        ]);
+        switch(message.Content) {
+            case '王胤':
+                res.reply('天才');
+                break;
+            case '王晶':
+                res.reply('瓜娃子');
+                break;
+            default:
+                res.reply([
+                    {
+                        title: '我说鸡蛋你说YO',
+                        description: '这是煎饼侠的故事',
+                        picurl: 'https://upload.wikimedia.org/wikipedia/en/e/ed/Nyan_cat_250px_frame.PNG',
+                        url: 'http://justwy.github.io/'
+                    }
+                ]);
+             }
     }
 }));
 
