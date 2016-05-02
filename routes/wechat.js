@@ -7,14 +7,30 @@
 var express = require('express');
 var router = express.Router();
 
+var request = require('request')
 var wechat = require('wechat');
 var config = require('../config.js');
+var stringUtils = require('../utils/stringUtils')
 
 router.use('/', wechat(config, function (req, res, next) {
     // 微信输入信息都在req.weixin上
     var message = req.weixin;
     console.log(message);
-    if (message.Content.toLowerCase().trim() === 'music') {
+    if (message.MsgType === 'image') {
+        const requestImageUrl = message.PicUrl
+        detectFace(requestImageUrl, (err, respUrl) => {
+            console.log('Got resp: ', respUrl)
+            var encoded = stringUtils.encode(respUrl)
+            res.reply([
+                {
+                    title: '测试你的年龄： ',
+                    description: '呵呵',
+                    picurl: respUrl,
+                    url: 'http://treq.me/lookup/image/' + encoded,
+                }
+            ]);
+        });
+    } else if (message.Content.toLowerCase().trim() === 'music') {
         // 回复一段音乐
         res.reply({
             type: "music",
@@ -39,12 +55,28 @@ router.use('/', wechat(config, function (req, res, next) {
                     {
                         title: '我说鸡蛋你说YO',
                         description: '这是煎饼侠的故事',
-                        picurl: 'https://upload.wikimedia.org/wikipedia/en/e/ed/Nyan_cat_250px_frame.PNG',
-                        url: 'http://justwy.github.io/'
+                        //picurl: 'https://upload.wikimedia.org/wikipedia/en/e/ed/Nyan_cat_250px_frame.PNG',
+                        picurl: 'https://dl.dropboxusercontent.com/u/8248296/tmp/test.jpg',
+                        //url: 'http://justwy.github.io/'
+                        url: 'https://dl.dropboxusercontent.com/u/8248296/tmp/test.jpg',
                     }
                 ]);
              }
     }
 }));
+
+function detectFace(url, cb) {
+    request({
+            method: 'GET',
+            uri: 'http://localhost:5100/detect/?url=' + url,
+        },
+        function (error, response, body) {
+            if (error) {
+                return cb(err)
+            }
+
+            return cb(null, body)
+    })
+}
 
 module.exports = router;
